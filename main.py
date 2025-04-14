@@ -356,7 +356,7 @@ if st.session_state.page_num == 3:
         horizontal=True,
     )
     TRUST_SCI_sincere = st.radio(
-        "你觉得大多数科学家改善他人生活的热心程度如何？",
+        "你觉得大多数科学家是否真诚?",
         [
             "非常不真诚",
             "比较不真诚",
