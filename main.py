@@ -744,9 +744,7 @@ if st.session_state.page_num == 7:
         with middle:
             st.markdown(":blue-badge[内容由 AI 生成，请仔细甄别。]")
     elif st.session_state.data_dict["GROUP_TIP"] == 2:
-        _, middle, _ = st.columns(3)
-        with middle:
-            st.write(
+        st.markdown(
                 ":blue-badge[本 AI 的回答经过了转基因食品领域专家的检查，但不保证完全准确，请仔细甄别。]"
             )
     if st.session_state.chat_num >= 1:
@@ -1133,6 +1131,57 @@ if st.session_state.page_num == 9:
         _, _, _, _, right = st.columns(5)
         with right:
             st.button("下一页", on_click=goToNextPage_10)
+
+
+def on_submit():
+    st.session_state.submitted = True
+    data_dict = st.session_state.data_dict
+    data_dict["chat_messages"] = json.dumps(
+        st.session_state.messages
+    )  # 确保转换为JSON字符串
+    data_dict["chat_num"] = st.session_state.chat_num
+    try:
+        with conn.session as s:
+            s.execute(
+                text(
+                    """
+                INSERT INTO test 
+                (open_at, group_personalized, group_tip, conscent, code, start_at,
+dem_gender, dem_gender_other, dem_age, dem_resid, dem_edu, dem_income,
+attcheck_1, ailite_1, ailite_2, ailite_3, ailite_4, ailite_5, ailite_6,
+trust_sci_honest, trust_sci_concerned, trust_sci_ethical, trust_sci_improve,
+trust_sci_sincere, trust_sci_otherint, pre_attitude_1, pre_attitude_2,
+pre_attitude_3, pre_attitude_4, pre_willing_buy, pre_willing_eat,
+pre_willing_share, pre_belief_1, pre_belief_2, pre_belief_3, pre_belief_4,
+pre_belief_5, pre_belief, topic, concern_detail, post_sat_1, post_sat_2,
+post_learning_1, post_learning_2, post_continue, post_credibility_1,
+post_credibility_2, post_attitude_1, post_attitude_2, post_attitude_3,
+post_attitude_4, attcheck_2, post_willing_buy, post_willing_eat,
+post_willing_share, chat_messages, chat_num, check_source)
+                VALUES (
+                    :OpenAt, :GROUP_PERSONALIZED, :GROUP_TIP, :CONSCENT, :CODE, :StartAt,
+                    :DEM_GENDER, :DEM_GENDER_OTHER, :DEM_AGE, :DEM_RESID, :DEM_EDU, :DEM_INCOME,
+                    :ATTCHECK_1, :AIlit_1, :AIlit_2, :AIlit_3, :AIlit_4, :AIlit_5, :AIlit_6,
+                    :TRUST_SCI_honest, :TRUST_SCI_concerned, :TRUST_SCI_ethical, :TRUST_SCI_improve,
+                    :TRUST_SCI_sincere, :TRUST_SCI_otherint, :PRE_ATTITUDE_1, :PRE_ATTITUDE_2,
+                    :PRE_ATTITUDE_3, :PRE_ATTITUDE_4, :PRE_WILLING_BUY, :PRE_WILLING_EAT,
+                    :PRE_WILLING_SHARE, :PRE_BELIEF_1, :PRE_BELIEF_2, :PRE_BELIEF_3, :PRE_BELIEF_4,
+                    :PRE_BELIEF_5, :PRE_BELIEF, :TOPIC, :CONCERN_DETAIL, :POST_sat_1, :POST_sat_2,
+                    :POST_learning_1, :POST_learning_2, :POST_continue, :POST_credibility_1,
+                    :POST_credibility_2, :POST_ATTITUDE_1, :POST_ATTITUDE_2, :POST_ATTITUDE_3,
+                    :POST_ATTITUDE_4, :ATTCHECK_2, :POST_WILLING_BUY, :POST_WILLING_EAT,
+                    :POST_WILLING_SHARE, :chat_messages, :chat_num, :CHECK_source
+                )
+            """
+                ),
+                data_dict,
+            )
+            s.commit()
+    except Exception as e:
+        st.error(f"提交失败: {str(e)}")
+        st.stop()
+
+
 if st.session_state.page_num == 10:
     conn = st.connection("postgresql", type="sql")
     st.markdown(
@@ -1144,59 +1193,9 @@ if st.session_state.page_num == 10:
         "提交",
         disabled=st.session_state.submitted,  # 如果已提交则禁用按钮
         key="submit_button",
+        on_click=on_submit
     )
-    data_dict = st.session_state.data_dict
-    data_dict["chat_messages"] = st.session_state.messages
-    data_dict["chat_num"] = st.session_state.chat_num
-    df = pd.DataFrame({k: [v] for k, v in data_dict.items()})
     if SUBMIT:
         st.write("正在提交...请稍候。")
-        st.session_state.submitted = True
-        data_dict = st.session_state.data_dict
-        data_dict["chat_messages"] = json.dumps(
-            st.session_state.messages
-        )  # 确保转换为JSON字符串
-        data_dict["chat_num"] = st.session_state.chat_num
-        try:
-            with conn.session as s:
-                s.execute(
-                    text(
-                        """
-                    INSERT INTO test 
-                    (open_at, group_personalized, group_tip, conscent, code, start_at,
-    dem_gender, dem_gender_other, dem_age, dem_resid, dem_edu, dem_income,
-    attcheck_1, ailite_1, ailite_2, ailite_3, ailite_4, ailite_5, ailite_6,
-    trust_sci_honest, trust_sci_concerned, trust_sci_ethical, trust_sci_improve,
-    trust_sci_sincere, trust_sci_otherint, pre_attitude_1, pre_attitude_2,
-    pre_attitude_3, pre_attitude_4, pre_willing_buy, pre_willing_eat,
-    pre_willing_share, pre_belief_1, pre_belief_2, pre_belief_3, pre_belief_4,
-    pre_belief_5, pre_belief, topic, concern_detail, post_sat_1, post_sat_2,
-    post_learning_1, post_learning_2, post_continue, post_credibility_1,
-    post_credibility_2, post_attitude_1, post_attitude_2, post_attitude_3,
-    post_attitude_4, attcheck_2, post_willing_buy, post_willing_eat,
-    post_willing_share, chat_messages, chat_num, check_source)
-                    VALUES (
-                        :OpenAt, :GROUP_PERSONALIZED, :GROUP_TIP, :CONSCENT, :CODE, :StartAt,
-                        :DEM_GENDER, :DEM_GENDER_OTHER, :DEM_AGE, :DEM_RESID, :DEM_EDU, :DEM_INCOME,
-                        :ATTCHECK_1, :AIlit_1, :AIlit_2, :AIlit_3, :AIlit_4, :AIlit_5, :AIlit_6,
-                        :TRUST_SCI_honest, :TRUST_SCI_concerned, :TRUST_SCI_ethical, :TRUST_SCI_improve,
-                        :TRUST_SCI_sincere, :TRUST_SCI_otherint, :PRE_ATTITUDE_1, :PRE_ATTITUDE_2,
-                        :PRE_ATTITUDE_3, :PRE_ATTITUDE_4, :PRE_WILLING_BUY, :PRE_WILLING_EAT,
-                        :PRE_WILLING_SHARE, :PRE_BELIEF_1, :PRE_BELIEF_2, :PRE_BELIEF_3, :PRE_BELIEF_4,
-                        :PRE_BELIEF_5, :PRE_BELIEF, :TOPIC, :CONCERN_DETAIL, :POST_sat_1, :POST_sat_2,
-                        :POST_learning_1, :POST_learning_2, :POST_continue, :POST_credibility_1,
-                        :POST_credibility_2, :POST_ATTITUDE_1, :POST_ATTITUDE_2, :POST_ATTITUDE_3,
-                        :POST_ATTITUDE_4, :ATTCHECK_2, :POST_WILLING_BUY, :POST_WILLING_EAT,
-                        :POST_WILLING_SHARE, :chat_messages, :chat_num, :CHECK_SOURCE
-                    )
-                """
-                    ),
-                    data_dict,
-                )
-                s.commit()
-            st.rerun()
-        except Exception as e:
-            st.error(f"提交失败: {str(e)}")
-            st.stop()
     if st.session_state.submitted:
         st.write("提交成功！您可以退出本页面。")
