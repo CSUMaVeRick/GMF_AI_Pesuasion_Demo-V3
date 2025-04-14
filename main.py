@@ -46,7 +46,7 @@ st.markdown(
         #stDecoration {display:none;}
         stSidebar {visibility: hidden;}
         div[data-testid="stMarkdownContainer"] {font-size: 16px;}
-        # div[data-testid="stToolbar"] {display: none;}
+        # div[data-testid="stToolbar"] {visibility: hidden;}
         # div[data-testid="stSidebarContent"] {display: none;}
         # section[data-testid="stSidebar"] {display: none;}
         # div[data-testid="stSidebarCollapsedControl"] {display: none;}
