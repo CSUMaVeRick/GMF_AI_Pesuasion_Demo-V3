@@ -2,3 +2,4 @@ streamlit
 pandas
 langchain
 langchain_openai
+psycopg2-binary
