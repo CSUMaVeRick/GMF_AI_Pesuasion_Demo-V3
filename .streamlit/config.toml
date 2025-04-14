@@ -3,6 +3,6 @@ base="light"
 primaryColor="#1e783b"
 textColor="#000000"
 [client]
-toolbarMode = “minimal”
+toolbarMode = "minimal"
 [ui]
 hideTopBar = true
