@@ -6,6 +6,11 @@ import random
 import json
 from sqlalchemy import text
 
+## TODO
+## 交互的任务提示要设计得更清晰一些
+## 个性化有效性check题
+
+
 model = ChatOpenAI(
     openai_api_base=st.secrets["model_api"],
     openai_api_key=st.secrets["model_key"],
@@ -70,8 +75,44 @@ def transform_PB(x):
     return pb_dict[x]
 
 
-def goToNextPage():
-    st.session_state.page_num += 1
+def goToNextPage_1():
+    st.session_state.page_num = 1
+
+
+def goToNextPage_2():
+    st.session_state.page_num = 2
+
+
+def goToNextPage_3():
+    st.session_state.page_num = 3
+
+
+def goToNextPage_4():
+    st.session_state.page_num = 4
+
+
+def goToNextPage_5():
+    st.session_state.page_num = 5
+
+
+def goToNextPage_6():
+    st.session_state.page_num = 6
+
+
+def goToNextPage_7():
+    st.session_state.page_num = 7
+
+
+def goToNextPage_8():
+    st.session_state.page_num = 8
+
+
+def goToNextPage_9():
+    st.session_state.page_num = 9
+
+
+def goToNextPage_10():
+    st.session_state.page_num = 10
 
 
 def stream_response(response):
@@ -140,7 +181,7 @@ if st.session_state.page_num == 0:
             st.session_state.data_dict["CONSCENT"] = agree
             st.session_state.data_dict["CODE"] = participant_code
             ## 当开始按钮被点击，令页数 +1
-            st.button("开始", on_click=goToNextPage)
+            st.button("开始", on_click=goToNextPage_1)
     else:
         st.session_state.data_dict["CONSCENT"] = agree
 
@@ -199,12 +240,14 @@ if st.session_state.page_num == 1:
         st.session_state.data_dict["DEM_EDU"] = st.session_state.DEM_EDU
         st.session_state.data_dict["DEM_INCOME"] = st.session_state.DEM_INCOME
         st.session_state.data_dict["ATTCHECK_1"] = st.session_state.ATTCHECK_1
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_2)
 
 if st.session_state.page_num == 2:
     st.markdown("请根据您对人工智能（AI）的了解，完成以下6道**单选题**。")
     AIlit_1 = st.radio(
-        "请您考虑一下客户服务，以下哪项使用了AI？",
+        "在常见的产品客服功能中，以下哪项使用了AI？",
         [
             "详细的常见问题网页",
             "发送给客户的在线调查，允许客户提供反馈",
@@ -218,7 +261,7 @@ if st.session_state.page_num == 2:
         horizontal=False,
     )
     AIlit_2 = st.radio(
-        "请您考虑一下播放音乐，以下哪项使用了AI？",
+        "使用手机播放音乐时，以下哪项使用了AI？",
         [
             "使用蓝牙连接到无线扬声器",
             "播放列表推荐",
@@ -232,12 +275,12 @@ if st.session_state.page_num == 2:
         horizontal=False,
     )
     AIlit_3 = st.radio(
-        "请您考虑一下电子邮件，以下哪项使用了AI？",
+        "在电子邮件程序中，以下哪项使用了AI？",
         [
-            "电子邮件服务在用户打开后将电子邮件标记为已读",
-            "电子邮件服务允许用户安排电子邮件在未来特定时间发送",
-            "电子邮件服务将邮件分类为垃圾邮件",
-            "电子邮件服务按时间和日期排序邮件",
+            "在用户打开后将电子邮件标记为已读",
+            "允许用户安排电子邮件在未来特定时间发送",
+            "将邮件分类为垃圾邮件",
+            "按时间和日期排序邮件",
             "不确定",
         ],
         key="AIlit_3",
@@ -246,10 +289,10 @@ if st.session_state.page_num == 2:
         horizontal=False,
     )
     AIlit_4 = st.radio(
-        "请您考虑一下健康产品，以下哪项使用了AI？",
+        "生活中常见的健康产品中，以下哪项使用了AI？",
         [
             "分析运动和睡眠模式的可穿戴健身追踪器",
-            "放在某人舌下的温度计，用于检测发热",
+            "放在舌下的温度计，用于检测发热",
             "居家新冠检测",
             "测量血氧水平的脉搏血氧仪",
             "不确定",
@@ -260,12 +303,12 @@ if st.session_state.page_num == 2:
         horizontal=False,
     )
     AIlit_5 = st.radio(
-        "请您考虑一下在线购物，以下哪项使用了AI？",
+        "在网购时，以下哪项使用了AI？",
         [
-            "存储账户信息，如送货地址",
-            "之前购买记录",
-            "基于之前购买记录的产品推荐",
-            "其他客户的产品评论",
+            "APP存储账户信息，如送货地址",
+            "记录之前购买记录",
+            "APP基于之前购买记录的产品推荐",
+            "展示其他客户的产品评论",
             "不确定",
         ],
         key="AIlit_5",
@@ -274,11 +317,11 @@ if st.session_state.page_num == 2:
         horizontal=False,
     )
     AIlit_6 = st.radio(
-        "请您考虑一下家用设备，以下哪项使用了AI？",
+        "在小型家用设备中，以下哪项使用了AI？",
         [
-            "编程家庭温控器在特定时间改变温度",
+            "在特定时间改变温度的家庭温控器",
             "当门口有陌生人时，发出警报的安全摄像头",
-            "编程定时器控制家中的灯何时开关",
+            "定时器控制家中的灯何时开关",
             "当水过滤器需要更换时，指示灯变红",
             "不确定",
         ],
@@ -294,7 +337,9 @@ if st.session_state.page_num == 2:
         st.session_state.data_dict["AIlit_4"] = st.session_state.AIlit_4
         st.session_state.data_dict["AIlit_5"] = st.session_state.AIlit_5
         st.session_state.data_dict["AIlit_6"] = st.session_state.AIlit_6
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_3)
 if st.session_state.page_num == 3:
     st.markdown(
         "我们想知道您对本国科学家的看法，包括在大学、政府、公司和非营利组织工作的科学家。"
@@ -409,7 +454,9 @@ if st.session_state.page_num == 3:
         st.session_state.data_dict["TRUST_SCI_otherint"] = (
             st.session_state.TRUST_SCI_otherint
         )
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_4)
 if st.session_state.page_num == 4:
     st.markdown("接下来，我们想了解您对转基因食品的态度。")
     PRE_ATTITUDE_1 = st.radio(
@@ -542,7 +589,9 @@ if st.session_state.page_num == 4:
         st.session_state.data_dict["PRE_WILLING_SHARE"] = (
             st.session_state.PRE_WILLING_SHARE
         )
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_5)
     # st.write(st.session_state.data_dict)
 if st.session_state.page_num == 5:
 
@@ -650,7 +699,9 @@ if st.session_state.page_num == 5:
             + st.session_state.data_dict["PRE_BELIEF_4"]
             + st.session_state.data_dict["PRE_BELIEF_5"]
         ) / 5
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_6)
 if st.session_state.page_num == 6:
     TOPIC = st.radio(
         "在以下关于转基因的议题中，您认为哪一项对您最重要？",
@@ -681,19 +732,27 @@ if st.session_state.page_num == 6:
             st.session_state.data_dict["CONCERN_DETAIL"] = (
                 st.session_state.CONCERN_DETAIL
             )
-            st.button("下一页", on_click=goToNextPage)
+            _, _, _, _, right = st.columns(5)
+            with right:
+                st.button("下一页", on_click=goToNextPage_7)
 if st.session_state.page_num == 7:
     st.write(
         "接下来，您将获得至多五次与AI对话的机会。请您围绕您感兴趣的主题与AI进行交流。"
     )
     if st.session_state.data_dict["GROUP_TIP"] == 1:
-        st.write("内容由 AI 生成，请仔细甄别。")
+        _, middle, _ = st.columns(3)
+        with middle:
+            st.markdown(":blue-badge[内容由 AI 生成，请仔细甄别。]")
     elif st.session_state.data_dict["GROUP_TIP"] == 2:
-        st.write(
-            "本 AI 的回答经过了转基因食品领域专家的检查，但不保证完全准确，请仔细甄别。"
-        )
+        _, middle, _ = st.columns(3)
+        with middle:
+            st.write(
+                ":blue-badge[本 AI 的回答经过了转基因食品领域专家的检查，但不保证完全准确，请仔细甄别。]"
+            )
     if st.session_state.chat_num >= 1:
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_8)
     ## 显示聊天历史
     for message in st.session_state.messages:
         if message["role"] == "system":
@@ -807,6 +866,20 @@ if st.session_state.page_num == 8:
         index=None,  # 默认不选中任何选项
         horizontal=True,
     )
+    CHECK_source = st.radio(
+        "我明确地看到与我对话的AI是由专家认证的。",
+        [
+            "完全不同意",
+            "有点不同意",
+            "很难说同意或不同意",
+            "有点同意",
+            "完全同意",
+        ],
+        key="CHECK_source",
+        label_visibility="visible",
+        index=None,  # 默认不选中任何选项
+        horizontal=True,
+    )
     POST_learning_1 = st.radio(
         "AI帮助我更快地了解转基因食品。",
         [
@@ -880,6 +953,7 @@ if st.session_state.page_num == 8:
     if (
         POST_sat_1
         and POST_sat_2
+        and CHECK_source
         and POST_learning_1
         and POST_learning_2
         and POST_continue
@@ -888,6 +962,7 @@ if st.session_state.page_num == 8:
     ):
         st.session_state.data_dict["POST_sat_1"] = st.session_state.POST_sat_1
         st.session_state.data_dict["POST_sat_2"] = st.session_state.POST_sat_2
+        st.session_state.data_dict["CHECK_source"] = st.session_state.CHECK_source
         st.session_state.data_dict["POST_learning_1"] = st.session_state.POST_learning_1
         st.session_state.data_dict["POST_learning_2"] = st.session_state.POST_learning_2
         st.session_state.data_dict["POST_continue"] = st.session_state.POST_continue
@@ -897,11 +972,13 @@ if st.session_state.page_num == 8:
         st.session_state.data_dict["POST_credibility_2"] = (
             st.session_state.POST_credibility_2
         )
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_9)
 if st.session_state.page_num == 9:
     st.markdown("最后，我们还想再次询问您对转基因食品的态度。")
-    POST_ATTITUDE_1 = st.radio(
-        "转基因食品是不好的。",
+    POST_ATTITUDE_4 = st.radio(
+        "转基因食品对我的家庭一点用也没有。",
         [
             "完全不同意",
             "不同意",
@@ -911,7 +988,7 @@ if st.session_state.page_num == 9:
             "同意",
             "完全同意",
         ],
-        key="POST_ATTITUDE_1",
+        key="POST_ATTITUDE_4",
         label_visibility="visible",
         index=None,  # 默认不选中任何选项
         horizontal=False,
@@ -948,8 +1025,9 @@ if st.session_state.page_num == 9:
         index=None,  # 默认不选中任何选项
         horizontal=False,
     )
-    POST_ATTITUDE_4 = st.radio(
-        "转基因食品对我的家庭一点用也没有。",
+
+    POST_ATTITUDE_1 = st.radio(
+        "转基因食品是不好的。",
         [
             "完全不同意",
             "不同意",
@@ -959,7 +1037,7 @@ if st.session_state.page_num == 9:
             "同意",
             "完全同意",
         ],
-        key="POST_ATTITUDE_4",
+        key="POST_ATTITUDE_1",
         label_visibility="visible",
         index=None,  # 默认不选中任何选项
         horizontal=False,
@@ -1052,13 +1130,15 @@ if st.session_state.page_num == 9:
         st.session_state.data_dict["POST_WILLING_SHARE"] = (
             st.session_state.POST_WILLING_SHARE
         )
-        st.button("下一页", on_click=goToNextPage)
+        _, _, _, _, right = st.columns(5)
+        with right:
+            st.button("下一页", on_click=goToNextPage_10)
 if st.session_state.page_num == 10:
     conn = st.connection("postgresql", type="sql")
     st.markdown(
         """感谢您完成了本问卷，请您接下来：
 1. 点击「提交」按钮。
-2. 根据提示退出系统。"""
+2. 等待提示退出系统。"""
     )
     SUBMIT = st.button(
         "提交",
@@ -1070,6 +1150,7 @@ if st.session_state.page_num == 10:
     data_dict["chat_num"] = st.session_state.chat_num
     df = pd.DataFrame({k: [v] for k, v in data_dict.items()})
     if SUBMIT:
+        st.write("正在提交...请稍候。")
         st.session_state.submitted = True
         data_dict = st.session_state.data_dict
         data_dict["chat_messages"] = json.dumps(
@@ -1093,7 +1174,7 @@ if st.session_state.page_num == 10:
     post_learning_1, post_learning_2, post_continue, post_credibility_1,
     post_credibility_2, post_attitude_1, post_attitude_2, post_attitude_3,
     post_attitude_4, attcheck_2, post_willing_buy, post_willing_eat,
-    post_willing_share, chat_messages, chat_num)
+    post_willing_share, chat_messages, chat_num, check_source)
                     VALUES (
                         :OpenAt, :GROUP_PERSONALIZED, :GROUP_TIP, :CONSCENT, :CODE, :StartAt,
                         :DEM_GENDER, :DEM_GENDER_OTHER, :DEM_AGE, :DEM_RESID, :DEM_EDU, :DEM_INCOME,
@@ -1106,16 +1187,16 @@ if st.session_state.page_num == 10:
                         :POST_learning_1, :POST_learning_2, :POST_continue, :POST_credibility_1,
                         :POST_credibility_2, :POST_ATTITUDE_1, :POST_ATTITUDE_2, :POST_ATTITUDE_3,
                         :POST_ATTITUDE_4, :ATTCHECK_2, :POST_WILLING_BUY, :POST_WILLING_EAT,
-                        :POST_WILLING_SHARE, :chat_messages, :chat_num
+                        :POST_WILLING_SHARE, :chat_messages, :chat_num, :CHECK_SOURCE
                     )
                 """
                     ),
                     data_dict,
                 )
                 s.commit()
-                st.success("提交成功！您可以退出本系统。")
             st.rerun()
         except Exception as e:
             st.error(f"提交失败: {str(e)}")
             st.stop()
-    # todo prompt后台的细节如何，论文中需要交代
+    if st.session_state.submitted:
+        st.write("提交成功！您可以退出本页面。")
