@@ -737,101 +737,103 @@ if st.session_state.page_num == 6:
                 st.button("下一页", on_click=goToNextPage_7)
 if st.session_state.page_num == 7:
     st.write(
-        "接下来，您将获得至多五次与AI对话的机会。请您围绕您感兴趣的主题与AI进行交流。"
+        "接下来，您将获得**至多五次**与AI对话的机会。请您围绕您刚刚选择的主题与AI进行交流。"
     )
+    st.write("在进行**一次对话**后，您就可以点击提示语旁的按钮进入下一页。")
+    _, _, _, _, right = st.columns(5)
+    with right:
+        if st.session_state.chat_num >= 1:
+            st.button("下一页", on_click=goToNextPage_8)
     if st.session_state.data_dict["GROUP_TIP"] == 1:
         _, middle, _ = st.columns(3)
         with middle:
             st.markdown(":blue-badge[内容由 AI 生成，请仔细甄别。]")
     elif st.session_state.data_dict["GROUP_TIP"] == 2:
         st.markdown(
-                ":blue-badge[本 AI 的回答经过了转基因食品领域专家的检查，但不保证完全准确，请仔细甄别。]"
-            )
-    if st.session_state.chat_num >= 1:
-        _, _, _, _, right = st.columns(5)
-        with right:
-            st.button("下一页", on_click=goToNextPage_8)
-    ## 显示聊天历史
-    for message in st.session_state.messages:
-        if message["role"] == "system":
-            continue
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    if st.session_state.init_chat:
-        st.session_state.init_chat = False
-        with st.chat_message("user"):
-            init_input = f"你好，我想要了解转基因食品的{st.session_state.data_dict['TOPIC']}。{st.session_state.data_dict['CONCERN_DETAIL']}"
-            st.markdown(init_input)
-        personalized = st.session_state.data_dict["GROUP_PERSONALIZED"]
-        if personalized == 1:
-            ## Control Group
-            st.session_state.messages.append(
-                {
-                    "role": "system",
-                    "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。",
-                }
-            )
-        elif personalized == 2:
-            ## Demo Group
-            personalized_profile = f'你将面对的用户是一位居住在{st.session_state.data_dict["DEM_RESID"]}的{st.session_state.data_dict["DEM_AGE"]}岁{st.session_state.data_dict["DEM_GENDER_OTHER"] if st.session_state.data_dict["DEM_GENDER_OTHER"] else st.session_state.data_dict["DEM_GENDER"]}，ta的教育程度是{st.session_state.data_dict["DEM_EDU"]}，ta的每月可支配收入约为{st.session_state.data_dict["DEM_INCOME"]}元。**不要透露用户信息。**'
-            st.session_state.messages.append(
-                {
-                    "role": "system",
-                    "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。"
-                    + personalized_profile,
-                }
-            )
-        elif personalized == 3:
-            ## PB Group
-            if st.session_state.data_dict["PRE_BELIEF"] > 4:
-                personalized_profile = "你将要面对的用户对转基因食品存在较深刻的误解，请你谨慎考虑与其交流时的用词。"
-            else:
-                personalized_profile = "你将要面对的用户对转基因食品的观点是相对乐观的，你可以为ta介绍转基因食品的更多好处。"
-            st.session_state.messages.append(
-                {
-                    "role": "system",
-                    "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。"
-                    + personalized_profile,
-                }
-            )
-        elif personalized == 4:
-            ## Demo + PB
-            personalized_profile = f'你将面对的用户是一位居住在{st.session_state.data_dict["DEM_RESID"]}的{st.session_state.data_dict["DEM_AGE"]}岁{st.session_state.data_dict["DEM_GENDER_OTHER"] if st.session_state.data_dict["DEM_GENDER_OTHER"] else st.session_state.data_dict["DEM_GENDER"]}，ta的教育程度是{st.session_state.data_dict["DEM_EDU"]}，ta的每月可支配收入约为{st.session_state.data_dict["DEM_INCOME"]}元。**不要透露用户信息。**'
-            if st.session_state.data_dict["PRE_BELIEF"] > 4:
-                # todo 这里可能需要修改，基于文献的劝服策略
-                personalized_profile += "你将要面对的用户对转基因食品存在较深刻的误解，请你谨慎考虑与其交流时的用词。"
-            else:
-                # todo 这里可能需要修改，基于文献的劝服策略
-                personalized_profile += "你将要面对的用户对转基因食品的观点是相对乐观的，你可以为ta介绍转基因食品的更多好处。"
-            st.session_state.messages.append(
-                {
-                    "role": "system",
-                    "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。"
-                    + personalized_profile,
-                }
-            )
-        st.session_state.messages.append({"role": "user", "content": init_input})
-        with st.chat_message("assistant"):
-            response = st.write_stream(get_response(st.session_state.messages))
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        st.rerun()
-
+            ":blue-badge[本 AI 的回答经过了转基因食品领域专家的检查，请仔细甄别。]"
+        )
     user_input = st.chat_input(
         f"您还有{5-st.session_state.chat_num}次对话机会，请输入...",
         disabled=st.session_state.chat_disabled,
     )
-    if user_input:
-        st.session_state.chat_num += 1
-        if st.session_state.chat_num >= 5:
-            st.session_state.chat_disabled = True
-        with st.chat_message("user"):
-            st.markdown(user_input)
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("assistant"):
-            response = st.write_stream(get_response(st.session_state.messages))
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        st.rerun()
+    ## 显示聊天历史
+    with st.container(height=800):
+        for message in st.session_state.messages:
+            if message["role"] == "system":
+                continue
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+        if st.session_state.init_chat:
+            st.session_state.init_chat = False
+            with st.chat_message("user"):
+                init_input = f"你好，我想要了解转基因食品的{st.session_state.data_dict['TOPIC']}。{st.session_state.data_dict['CONCERN_DETAIL']}"
+                st.markdown(init_input)
+            personalized = st.session_state.data_dict["GROUP_PERSONALIZED"]
+            if personalized == 1:
+                ## Control Group
+                st.session_state.messages.append(
+                    {
+                        "role": "system",
+                        "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。",
+                    }
+                )
+            elif personalized == 2:
+                ## Demo Group
+                personalized_profile = f'你将面对的用户是一位居住在{st.session_state.data_dict["DEM_RESID"]}的{st.session_state.data_dict["DEM_AGE"]}岁{st.session_state.data_dict["DEM_GENDER_OTHER"] if st.session_state.data_dict["DEM_GENDER_OTHER"] else st.session_state.data_dict["DEM_GENDER"]}，ta的教育程度是{st.session_state.data_dict["DEM_EDU"]}，ta的每月可支配收入约为{st.session_state.data_dict["DEM_INCOME"]}元。**不要透露用户信息。**'
+                st.session_state.messages.append(
+                    {
+                        "role": "system",
+                        "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。"
+                        + personalized_profile,
+                    }
+                )
+            elif personalized == 3:
+                ## PB Group
+                if st.session_state.data_dict["PRE_BELIEF"] > 4:
+                    personalized_profile = "你将要面对的用户对转基因食品存在较深刻的误解，请你谨慎考虑与其交流时的用词。"
+                else:
+                    personalized_profile = "你将要面对的用户对转基因食品的观点是相对乐观的，你可以为ta介绍转基因食品的更多好处。"
+                st.session_state.messages.append(
+                    {
+                        "role": "system",
+                        "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。"
+                        + personalized_profile,
+                    }
+                )
+            elif personalized == 4:
+                ## Demo + PB
+                personalized_profile = f'你将面对的用户是一位居住在{st.session_state.data_dict["DEM_RESID"]}的{st.session_state.data_dict["DEM_AGE"]}岁{st.session_state.data_dict["DEM_GENDER_OTHER"] if st.session_state.data_dict["DEM_GENDER_OTHER"] else st.session_state.data_dict["DEM_GENDER"]}，ta的教育程度是{st.session_state.data_dict["DEM_EDU"]}，ta的每月可支配收入约为{st.session_state.data_dict["DEM_INCOME"]}元。**不要透露用户信息。**'
+                if st.session_state.data_dict["PRE_BELIEF"] > 4:
+                    # todo 这里可能需要修改，基于文献的劝服策略
+                    personalized_profile += "你将要面对的用户对转基因食品存在较深刻的误解，请你谨慎考虑与其交流时的用词。"
+                else:
+                    # todo 这里可能需要修改，基于文献的劝服策略
+                    personalized_profile += "你将要面对的用户对转基因食品的观点是相对乐观的，你可以为ta介绍转基因食品的更多好处。"
+                st.session_state.messages.append(
+                    {
+                        "role": "system",
+                        "content": "你是一位转基因食品领域的专家，请用150-200词回答用户的相关问题。"
+                        + personalized_profile,
+                    }
+                )
+            st.session_state.messages.append({"role": "user", "content": init_input})
+            with st.chat_message("assistant"):
+                response = st.write_stream(get_response(st.session_state.messages))
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            st.rerun()
+        if user_input:
+            st.session_state.chat_num += 1
+            if st.session_state.chat_num >= 5:
+                st.session_state.chat_disabled = True
+            with st.chat_message("user"):
+                st.markdown(user_input)
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            with st.chat_message("assistant"):
+                response = st.write_stream(get_response(st.session_state.messages))
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            st.rerun()
+
 
 if st.session_state.page_num == 8:
     st.markdown("问卷马上就要结束了，我们还想再问您几个问题。")
@@ -864,20 +866,7 @@ if st.session_state.page_num == 8:
         index=None,  # 默认不选中任何选项
         horizontal=True,
     )
-    CHECK_source = st.radio(
-        "我明确地看到与我对话的AI是由专家认证的。",
-        [
-            "完全不同意",
-            "有点不同意",
-            "很难说同意或不同意",
-            "有点同意",
-            "完全同意",
-        ],
-        key="CHECK_source",
-        label_visibility="visible",
-        index=None,  # 默认不选中任何选项
-        horizontal=True,
-    )
+
     POST_learning_1 = st.radio(
         "AI帮助我更快地了解转基因食品。",
         [
@@ -951,7 +940,6 @@ if st.session_state.page_num == 8:
     if (
         POST_sat_1
         and POST_sat_2
-        and CHECK_source
         and POST_learning_1
         and POST_learning_2
         and POST_continue
@@ -960,7 +948,6 @@ if st.session_state.page_num == 8:
     ):
         st.session_state.data_dict["POST_sat_1"] = st.session_state.POST_sat_1
         st.session_state.data_dict["POST_sat_2"] = st.session_state.POST_sat_2
-        st.session_state.data_dict["CHECK_source"] = st.session_state.CHECK_source
         st.session_state.data_dict["POST_learning_1"] = st.session_state.POST_learning_1
         st.session_state.data_dict["POST_learning_2"] = st.session_state.POST_learning_2
         st.session_state.data_dict["POST_continue"] = st.session_state.POST_continue
@@ -1104,6 +1091,18 @@ if st.session_state.page_num == 9:
         index=None,  # 默认不选中任何选项
         horizontal=False,
     )
+    CHECK_source = st.radio(
+        "在对话页面，我明确地看到与我对话的AI是由专家认证的。",
+        [
+            "是",
+            "否",
+            "不知道",
+        ],
+        key="CHECK_source",
+        label_visibility="visible",
+        index=None,  # 默认不选中任何选项
+        horizontal=True,
+    )
     if (
         POST_ATTITUDE_1
         and POST_ATTITUDE_2
@@ -1113,6 +1112,7 @@ if st.session_state.page_num == 9:
         and POST_WILLING_BUY
         and POST_WILLING_EAT
         and POST_WILLING_SHARE
+        and CHECK_source
     ):
         st.session_state.data_dict["POST_ATTITUDE_1"] = st.session_state.POST_ATTITUDE_1
         st.session_state.data_dict["POST_ATTITUDE_2"] = st.session_state.POST_ATTITUDE_2
@@ -1128,6 +1128,7 @@ if st.session_state.page_num == 9:
         st.session_state.data_dict["POST_WILLING_SHARE"] = (
             st.session_state.POST_WILLING_SHARE
         )
+        st.session_state.data_dict["CHECK_source"] = st.session_state.CHECK_source
         _, _, _, _, right = st.columns(5)
         with right:
             st.button("下一页", on_click=goToNextPage_10)
@@ -1193,7 +1194,7 @@ if st.session_state.page_num == 10:
         "提交",
         disabled=st.session_state.submitted,  # 如果已提交则禁用按钮
         key="submit_button",
-        on_click=on_submit
+        on_click=on_submit,
     )
     if SUBMIT:
         st.write("正在提交...请稍候。")
